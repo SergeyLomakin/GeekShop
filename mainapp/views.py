@@ -10,15 +10,8 @@ JSON_PATH = 'mainapp/json'
 
 
 def load_from_json(file_name):
-    with open(os.path.join(JSON_PATH, file_name + '.json'), 'r') as infile:
+    with open(os.path.join(JSON_PATH, file_name + '.json'), 'r', encoding='utf-8') as infile:
         return json.load(infile)
-
-
-def get_basket(user):
-    if user.is_authenticated:
-        return Basket.objects.filter(user=user)
-    else:
-        return []
 
         
 def get_hot_product():
@@ -33,7 +26,6 @@ def get_same_products(hot_product):
     return same_products
         
 
-        
 def main(request):
     title = 'главная'  
     products = Product.objects.filter(is_active=True, category__is_active=True)[:3]
@@ -41,7 +33,6 @@ def main(request):
     content = {
         'title': title,
         'products': products,
-        'basket': get_basket(request.user),
     }
     
     return render(request, 'mainapp/index.html', content)
@@ -50,7 +41,6 @@ def main(request):
 def products(request, pk=None, page=1):   
     title = 'продукты'
     links_menu = ProductCategory.objects.filter(is_active=True)
-    basket = get_basket(request.user)
            
     if pk:
         if pk == '0':
@@ -76,7 +66,6 @@ def products(request, pk=None, page=1):
             'links_menu': links_menu,
             'category': category,
             'products': products_paginator,
-            'basket': basket,
         }
         
         return render(request, 'mainapp/products_list.html', content)
@@ -89,7 +78,6 @@ def products(request, pk=None, page=1):
         'links_menu': links_menu, 
         'hot_product': hot_product,
         'same_products': same_products,
-        'basket': basket,
     }
     
     return render(request, 'mainapp/products.html', content)
@@ -104,8 +92,7 @@ def product(request, pk):
     content = {
         'title': title, 
         'links_menu': links_menu, 
-        'product': product, 
-        'basket': get_basket(request.user),
+        'product': product,
     }
     return render(request, 'mainapp/product.html', content)
     
@@ -118,7 +105,6 @@ def contact(request):
     content = {
         'title': title,
         'locations': locations,
-        'basket': get_basket(request.user),
     }
     
     return render(request, 'mainapp/contact.html', content)
